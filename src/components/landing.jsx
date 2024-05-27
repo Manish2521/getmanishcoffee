@@ -18,7 +18,7 @@ const Landing = () => {
 
         try {
             // const amount = parseInt(amount);
-            const response = await fetch('http://localhost:5000/create-order', {
+            const response = await fetch('https://getmanishcoffee.netlify.app/api/create-order', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
