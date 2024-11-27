@@ -26,7 +26,7 @@ const App = () => {
     // const razorpayKey = process.env.REACT_APP_RAZORPAY_KEY;
     // console.log("----------",razorpayKey);
     const options = {
-      key: "rzp_test_C71g3RFZndj5Vr", 
+      key: process.env.REACT_APP_RAZORPAY_KEY, 
       amount: amount * 100, 
       currency: "INR",
       name: "Coffee Donation",
