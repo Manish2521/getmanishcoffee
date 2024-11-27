@@ -26,10 +26,10 @@ const App = () => {
     // const razorpayKey = process.env.REACT_APP_RAZORPAY_KEY;
     // console.log("----------",razorpayKey);
     const options = {
-      key: process.env.REACT_APP_RAZORPAY_KEY, 
+      key: "rzp_test_C71g3RFZndj5Vr", 
       amount: amount * 100, 
       currency: "INR",
-      name: "Coffee Donation",
+      name: "Coffee Payment",
       description: "Get Manish a Coffee",
       image: coffeeIcon, 
       prefill: {
@@ -41,14 +41,19 @@ const App = () => {
         color: "#f59e0b", 
       },
       handler: function (response) {
+        // console.log("---------------------------");
+        // console.log(response)
+        // console.log("---------------------------");
         setPaymentStatus("success");
         setPaymentData(response);
+        // const paymentMethod = response?.method
+        // localStorage.setItem('paymentMethod', paymentMethod);
         setIsPaymentSuccessModalOpen(true);
         setShowModal(false); 
         setName('');
         setEmail('');
         setPhone('');
-        setItemCount('1');
+        setItemCount(1);
       },
       modal: {
         ondismiss: function () {
@@ -66,11 +71,11 @@ const App = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (name && email && phone.length === 10 && /^\d{10}$/.test(phone)) {
+    if (
+      name && email && 
+      phone.length === 10 && /^[789]\d{9}$/.test(phone)
+    ) {
       setShowModal(true); 
-    } else {
-      alert("Please fill in all the required fields and enter a valid phone number!");
     }
   };
 
@@ -81,25 +86,78 @@ const App = () => {
     const email = localStorage.getItem("email");
     const phone = localStorage.getItem("phone");
     const doc = new jsPDF();
-
+    const message = "Thank you for the great work!";
+    const invoiceNumber = Math.floor(Math.random() * 900000) + 100000;
+    // const paymentMethod = "Credit Card";
+    
     doc.setFontSize(18);
-    doc.text("Invoice", 14, 20);
-
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(0, 0, 0); 
+    doc.text("Payment Invoice", 105, 20, null, null, "center");
+    
     doc.setFontSize(12);
-    doc.text(`Name: ${name}`, 14, 30);
-    doc.text(`Email: ${email}`, 14, 40);
-    doc.text(`Phone: ${phone}`, 14, 50);
-    doc.text(`Amount Paid: Rs ${itemCount * pricePerCoffee}`, 14, 60); 
-    doc.text(`Transaction ID: ${paymentData?.razorpay_payment_id}`, 14, 70);
-    doc.text(`Date and Time: ${new Date().toLocaleString()}`, 14, 80);
+    doc.text("Thank you for your support!", 105, 28, null, null, "center");
+    
+    doc.setFillColor(240, 255, 240); 
+    doc.setDrawColor(0, 255, 0); 
+    doc.roundedRect(14, 36, 186, 14, 3, 3, "F"); 
+    
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(0, 0, 0); 
+    doc.text("Payment Successful", 20, 44); 
+    doc.text(`Invoice No : ${invoiceNumber}`, 196, 44, null, null, "right"); 
+    
+    doc.setFont("helvetica", "bold");
+    doc.text("Payment Details", 14, 58);
+    doc.setLineWidth(0.5);
+    doc.line(14, 60, 196, 60);
+    
+    doc.setFont("helvetica", "normal");
+    doc.text(`Date and Time: ${new Date().toLocaleString()}`, 14, 68);
+    doc.text(`Transaction ID: ${paymentData?.razorpay_payment_id}`, 120, 68);
+    
+    doc.setFont("helvetica", "bold");
+    doc.text("User Information", 14, 82);
+    doc.line(14, 84, 196, 84);
+    
+    doc.setFont("helvetica", "normal");
+    doc.text(`Name:`, 14, 92);
+    doc.text(name, 160, 92, null, null, "right");
+    
+    doc.text(`Email:`, 14, 100);
+    doc.text(email, 160, 100, null, null, "right");
+    
+    doc.text(`Amount:`, 14, 108);
+    doc.setTextColor(0, 0, 0); 
+    doc.text(`${itemCount * pricePerCoffee.toFixed(2)} rs`, 160, 108, null, null, "right");
+    
+    // doc.text(`Payment Method:`, 14, 116);
+    // doc.text(paymentMethod, 160, 116, null, null, "right");
+    
+    doc.setFont("helvetica", "bold");
+    doc.text("Message", 14, 120); 
+    doc.line(14, 122, 196, 122); 
+    
+    doc.setFont("helvetica", "normal");
+    doc.text(message, 14, 127); 
+    
+    
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100); 
+    doc.text("This is an automatically generated invoice.", 105, 280, null, null, "center");
+    
+    doc.save("Payment_Invoice.pdf");
+  
+  };
 
-    doc.save("invoice.pdf"); 
-
+  const removeinfo = () => {
     localStorage.removeItem('name', name);
     localStorage.removeItem('email', email);
     localStorage.removeItem('phone', phone);
-    setIsPaymentSuccessModalOpen(false);
+
   };
+
 
   return (
     <div className="bg-gradient-to-tr from-amber-200 to-yellow-500 min-h-screen flex justify-center items-center">
@@ -175,8 +233,13 @@ const App = () => {
               placeholder="Enter your phone number"
               required
             />
-            {phone.length < 10 && phone.length > 0 && (
+
+            {phone.length > 0 && phone.length < 10 && (
               <p className="text-red-500 text-sm">Phone number must be 10 digits long</p>
+            )}
+
+            {phone.length === 10 && !/^[789]\d{9}$/.test(phone) && (
+              <p className="text-red-500 text-sm">Phone number must start with 7, 8, or 9</p>
             )}
 
             <label className="inline-flex items-center mt-3 mb-6">
@@ -194,13 +257,13 @@ const App = () => {
               type="submit"
               className="px-4 py-1.5 rounded-md shadow-lg bg-gradient-to-r from-yellow-600 to-orange-600 font-medium text-white block transition duration-300"
             >
-              Donate ₹ {itemCount * pricePerCoffee}
+              Pay ₹ {itemCount * pricePerCoffee}
             </button>
           </form>
         </div>
       </section>
 
-      {/* Tailwind Modal for Payment Process */}
+      {/* Payment Process Modal*/}
       {showModal && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg sm:w-3/4 md:w-1/2 lg:w-1/3 xl:w-1/4">
@@ -219,7 +282,7 @@ const App = () => {
               Proceed with Payment
             </button>
             <button
-              onClick={() => setShowModal(false)}
+              onClick={() => {setShowModal(false); removeinfo();}}
               className="w-full px-4 py-2 mt-4 bg-gray-300 text-black font-bold rounded-md shadow-md hover:bg-gray-400 focus:outline-none"
             >
               Cancel
@@ -236,10 +299,9 @@ const App = () => {
             <p className="text-gray-700">Razorpay Payment ID: {paymentData?.razorpay_payment_id}</p>
             <p className="text-gray-700">Amount Paid: ₹{itemCount * pricePerCoffee}</p>
             
-            {/* Flex container for buttons */}
             <div className="mt-6 flex justify-between">
               <button
-                onClick={() => setIsPaymentSuccessModalOpen(false)}
+                onClick={() => {setIsPaymentSuccessModalOpen(false); removeinfo();}}
                 className="px-4 py-2 bg-green-600 text-white rounded-md"
               >
                 Close
@@ -263,7 +325,7 @@ const App = () => {
             <p className="text-gray-700 mb-6">You have cancelled the payment. Please try again later.</p>
             <div className="flex justify-end">
               <button
-                onClick={() => setIsPaymentCancelModalOpen(false)}
+                onClick={() => {setIsPaymentCancelModalOpen(false); removeinfo(); }}
                 className="px-4 py-2 bg-red-500 text-white font-bold rounded-md shadow-md hover:bg-red-600 focus:outline-none"
               >
                 Close
