@@ -23,6 +23,7 @@ const App = () => {
     localStorage.setItem('name', name);
     localStorage.setItem('email', email);
     localStorage.setItem('phone', phone);
+    localStorage.setItem('amount', amount);
     // const razorpayKey = process.env.REACT_APP_RAZORPAY_KEY;
     // console.log("----------",razorpayKey);
     const options = {
@@ -83,6 +84,7 @@ const App = () => {
   const generateInvoice = () => {
     
     const name = localStorage.getItem("name");
+    const amount = localStorage.getItem("amount");
     const email = localStorage.getItem("email");
     const phone = localStorage.getItem("phone");
     const doc = new jsPDF();
@@ -130,7 +132,7 @@ const App = () => {
     
     doc.text(`Amount:`, 14, 108);
     doc.setTextColor(0, 0, 0); 
-    doc.text(`${itemCount * pricePerCoffee.toFixed(2)} rs`, 160, 108, null, null, "right");
+    doc.text(`${amount} rs`, 160, 108, null, null, "right");
     
     // doc.text(`Payment Method:`, 14, 116);
     // doc.text(paymentMethod, 160, 116, null, null, "right");
@@ -152,11 +154,12 @@ const App = () => {
   };
 
   const removeinfo = () => {
-    localStorage.removeItem('name', name);
-    localStorage.removeItem('email', email);
-    localStorage.removeItem('phone', phone);
-
+    localStorage.removeItem('name');
+    localStorage.removeItem('email');
+    localStorage.removeItem('phone');
+    localStorage.removeItem('amount');
   };
+  
 
 
   return (
@@ -297,7 +300,7 @@ const App = () => {
           <div className="bg-white p-6 rounded-lg shadow-lg sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/4">
             <h2 className="text-xl font-bold text-green-800 mb-4">Payment Successful!</h2>
             <p className="text-gray-700">Razorpay Payment ID: {paymentData?.razorpay_payment_id}</p>
-            <p className="text-gray-700">Amount Paid: ₹{itemCount * pricePerCoffee}</p>
+            <p className="text-gray-700">Amount Paid: ₹{localStorage.getItem('amount')}</p>
             
             <div className="mt-6 flex justify-between">
               <button
