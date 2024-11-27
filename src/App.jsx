@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import coffeeIcon from "./coffee.png";
 import { jsPDF } from "jspdf"; 
-import { config } from './config';
+// import { config } from './config';
 
 const App = () => {
   const [itemCount, setItemCount] = useState(1);
@@ -23,7 +23,7 @@ const App = () => {
     localStorage.setItem('name', name);
     localStorage.setItem('email', email);
     localStorage.setItem('phone', phone);
-    const razorpayKey = config.RAZORPAY_KEY;
+    const razorpayKey = RAZORPAY_KEY;
     const options = {
       key: razorpayKey, 
       amount: amount * 100, 
