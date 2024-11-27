@@ -23,7 +23,7 @@ const App = () => {
     localStorage.setItem('name', name);
     localStorage.setItem('email', email);
     localStorage.setItem('phone', phone);
-    const razorpayKey = process.env.RAZORPAY_KEY;
+    const razorpayKey = process.env.REACT_APP_RAZORPAY_KEY;
     console.log("----------",razorpayKey);
     const options = {
       key: razorpayKey, 
