@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import coffeeIcon from "./coffee.png";
 import { jsPDF } from "jspdf"; 
+import { config } from './config';
 
 const App = () => {
   const [itemCount, setItemCount] = useState(1);
@@ -16,14 +17,15 @@ const App = () => {
 
   const incrementCount = () => setItemCount((prev) => prev + 1);
   const decrementCount = () => setItemCount((prev) => (prev > 1 ? prev - 1 : 1));
+  
 
   const handlePayment = (name, email, phone, amount) => {
     localStorage.setItem('name', name);
     localStorage.setItem('email', email);
     localStorage.setItem('phone', phone);
-
+    const razorpayKey = config.RAZORPAY_KEY;
     const options = {
-      key: "rzp_test_C71g3RFZndj5Vr", 
+      key: razorpayKey, 
       amount: amount * 100, 
       currency: "INR",
       name: "Coffee Donation",
