@@ -23,9 +23,9 @@ const App = () => {
     localStorage.setItem('name', name);
     localStorage.setItem('email', email);
     localStorage.setItem('phone', phone);
-    const razorpayKey = process.env.RAZORPAY_KEY;
+    // const razorpayKey = process.env.RAZORPAY_KEY;
     const options = {
-      key: razorpayKey, 
+      key: process.env.RAZORPAY_KEY, 
       amount: amount * 100, 
       currency: "INR",
       name: "Coffee Donation",
