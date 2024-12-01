@@ -27,7 +27,7 @@ const App = () => {
     // const razorpayKey = process.env.REACT_APP_RAZORPAY_KEY;
     // console.log("----------",razorpayKey);
     const options = {
-      key: "rzp_test_C71g3RFZndj5Vr", 
+      key: "rzp_test_bPES0b7gSlSjD5", 
       amount: amount * 100, 
       currency: "INR",
       name: "Coffee Payment",
@@ -47,6 +47,10 @@ const App = () => {
         // console.log("---------------------------");
         setPaymentStatus("success");
         setPaymentData(response);
+        console.log("------------------");
+        console.log(response.razorpay_payment_id);
+        localStorage.setItem('razorpay_payment_id', response.razorpay_payment_id);
+        console.log("------------------");
         // const paymentMethod = response?.method
         // localStorage.setItem('paymentMethod', paymentMethod);
         setIsPaymentSuccessModalOpen(true);
@@ -80,88 +84,122 @@ const App = () => {
     }
   };
 
-
-  const generateInvoice = () => {
-    
+  const generateInvoice = async () => {
     const name = localStorage.getItem("name");
     const amount = localStorage.getItem("amount");
     const email = localStorage.getItem("email");
     const phone = localStorage.getItem("phone");
+    const razorpay_payment = localStorage.getItem("razorpay_payment_id");
+  
     const doc = new jsPDF();
     const message = "Thank you for the great work!";
-    const invoiceNumber = Math.floor(Math.random() * 900000) + 100000;
-    // const paymentMethod = "Credit Card";
-    
-    doc.setFontSize(18);
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(0, 0, 0); 
-    doc.text("Payment Invoice", 105, 20, null, null, "center");
-    
-    doc.setFontSize(12);
-    doc.text("Thank you for your support!", 105, 28, null, null, "center");
-    
-    doc.setFillColor(240, 255, 240); 
-    doc.setDrawColor(0, 255, 0); 
-    doc.roundedRect(14, 36, 186, 14, 3, 3, "F"); 
-    
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(0, 0, 0); 
-    doc.text("Payment Successful", 20, 44); 
-    doc.text(`Invoice No : ${invoiceNumber}`, 196, 44, null, null, "right"); 
-    
-    doc.setFont("helvetica", "bold");
-    doc.text("Payment Details", 14, 58);
-    doc.setLineWidth(0.5);
-    doc.line(14, 60, 196, 60);
-    
-    doc.setFont("helvetica", "normal");
-    doc.text(`Date and Time: ${new Date().toLocaleString()}`, 14, 68);
-    doc.text(`Transaction ID: ${paymentData?.razorpay_payment_id}`, 120, 68);
-    
-    doc.setFont("helvetica", "bold");
-    doc.text("User Information", 14, 82);
-    doc.line(14, 84, 196, 84);
-    
-    doc.setFont("helvetica", "normal");
-    doc.text(`Name:`, 14, 92);
-    doc.text(name, 160, 92, null, null, "right");
-    
-    doc.text(`Email:`, 14, 100);
-    doc.text(email, 160, 100, null, null, "right");
-    
-    doc.text(`Amount:`, 14, 108);
-    doc.setTextColor(0, 0, 0); 
-    doc.text(`${amount} rs`, 160, 108, null, null, "right");
-    
-    // doc.text(`Payment Method:`, 14, 116);
-    // doc.text(paymentMethod, 160, 116, null, null, "right");
-    
-    doc.setFont("helvetica", "bold");
-    doc.text("Message", 14, 120); 
-    doc.line(14, 122, 196, 122); 
-    
-    doc.setFont("helvetica", "normal");
-    doc.text(message, 14, 127); 
-    
-    
-    doc.setFontSize(10);
-    doc.setTextColor(100, 100, 100); 
-    doc.text("This is an automatically generated invoice.", 105, 280, null, null, "center");
-    
-    doc.save("Payment_Invoice.pdf");
+    try {
+      const response = await fetch(`http://localhost:3001/payment-details/${razorpay_payment}`, {
+        method: 'GET',
+        credentials: 'include'  
+      });
   
+      if (!response.ok) {
+        throw new Error(`Error fetching payment details: ${response.status}`);
+      }
+  
+      const textResponse = await response.text(); 
+      console.log('Raw response from backend:', textResponse);
+  
+      let paymentDetails;
+      try {
+        paymentDetails = JSON.parse(textResponse); 
+        console.log("Parsed payment details:", paymentDetails);
+      } catch (e) {
+        console.error('Error parsing JSON:', e);
+        throw new Error('Invalid JSON response');
+      }
+      const paymentMethod = paymentDetails.method || "N/A";
+      let bankName = paymentDetails.bank || "N/A";
+      if (paymentDetails.method === "card" && paymentDetails.card) {
+        bankName = paymentDetails.card.issuer || "N/A"; 
+      }
+      const paymentStatus = paymentDetails.status || "Failed";
+      const invoiceNumber = paymentDetails.acquirer_data?.bank_transaction_id || Math.floor(Math.random() * 900000) + 100000;; 
+  
+      doc.setFontSize(18);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(0, 0, 0);
+      doc.text("Payment Invoice", 105, 20, null, null, "center");
+  
+      doc.setFontSize(12);
+      doc.text("Thank you for your support!", 105, 28, null, null, "center");
+  
+      doc.setFillColor(240, 255, 240);
+      doc.setDrawColor(0, 255, 0);
+      doc.roundedRect(14, 36, 186, 14, 3, 3, "F");
+  
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(0, 0, 0);
+      doc.text("Payment Successful", 20, 44);
+      doc.text(`Invoice No : ${invoiceNumber}`, 196, 44, null, null, "right");
+  
+      doc.setFont("helvetica", "bold");
+      doc.text("Payment Details", 14, 58);
+      doc.setLineWidth(0.5);
+      doc.line(14, 60, 196, 60);
+  
+      doc.setFont("helvetica", "normal");
+      doc.text(`Date and Time: ${new Date().toLocaleString()}`, 14, 68);
+      doc.text(`Transaction ID: ${razorpay_payment}`, 120, 68);
+  
+      doc.setFont("helvetica", "bold");
+      doc.text("User Information", 14, 82);
+      doc.line(14, 84, 196, 84);
+  
+      doc.setFont("helvetica", "normal");
+      doc.text(`Name:`, 14, 92);
+      doc.text(name, 160, 92, null, null, "right");
+  
+      doc.text(`Email:`, 14, 100);
+      doc.text(email, 160, 100, null, null, "right");
+  
+      doc.text(`Phone:`, 14, 108);
+      doc.text(phone, 160, 108, null, null, "right");
+  
+      doc.text(`Amount:`, 14, 116);
+      doc.setTextColor(0, 0, 0);
+      doc.text(`${amount} INR`, 160, 116, null, null, "right");
+  
+      doc.text(`Payment Method:`, 14, 124);
+      doc.text(paymentMethod, 160, 124, null, null, "right");
+  
+      doc.text(`Bank Name:`, 14, 132);  
+      doc.text(bankName, 160, 132, null, null, "right");
+  
+      doc.setFont("helvetica", "bold");
+      doc.text("Message", 14, 144);
+      doc.line(14, 146, 196, 146);
+  
+      doc.setFont("helvetica", "normal");
+      doc.text(message, 14, 152);
+  
+      doc.setFontSize(10);
+      doc.setTextColor(100, 100, 100);
+      doc.text("This is an automatically generated invoice.", 105, 280, null, null, "center");
+  
+      doc.save("Payment_Invoice.pdf");
+  
+    } catch (error) {
+      console.error("Error fetching payment details:", error);
+    }
   };
+  
 
   const removeinfo = () => {
     localStorage.removeItem('name');
     localStorage.removeItem('email');
     localStorage.removeItem('phone');
     localStorage.removeItem('amount');
+    localStorage.removeItem('razorpay_payment_id');
   };
   
-
-
   return (
     <div className="bg-gradient-to-tr from-amber-200 to-yellow-500 min-h-screen flex justify-center items-center">
       <section className="p-4 max-w-lg w-full">
@@ -222,7 +260,7 @@ const App = () => {
               className="mb-3 mt-1 block w-full px-2 py-1.5 border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value.toLowerCase())}
               placeholder="Enter your email"
               required
             />
@@ -231,6 +269,7 @@ const App = () => {
             <input
               className={`mb-3 mt-1 block w-full px-2 py-1.5 border ${phone.length < 10 ? 'border-gray-300' : 'border-gray-300'} rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500`}
               type="tel"
+              maxLength="10"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="Enter your phone number"
