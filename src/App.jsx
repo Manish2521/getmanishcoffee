@@ -101,7 +101,7 @@ const App = () => {
 
   // Check whether Backend is up or not
   const keepalive = () => {
-    fetch('http://localhost:3001/keepalive', {
+    fetch('https://getmanishcoffee.onrender.com/keepalive', {
       method: 'GET',
       credentials: 'include', 
     })
@@ -129,7 +129,7 @@ const App = () => {
     const doc = new jsPDF();
     const message = "Thank you for the great work!";
     try {
-      const response = await fetch(`http://localhost:3001/payment-details/${razorpay_payment}`, {
+      const response = await fetch(`https://getmanishcoffee.onrender.com/payment-details/${razorpay_payment}`, {
         method: 'GET',
         credentials: 'include'  
       });
