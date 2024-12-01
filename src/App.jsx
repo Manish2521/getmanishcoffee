@@ -26,6 +26,20 @@ const App = () => {
     localStorage.setItem('amount', amount);
     // const razorpayKey = process.env.REACT_APP_RAZORPAY_KEY;
     // console.log("----------",razorpayKey);
+    keepalive();
+
+    setTimeout(() => {
+      keepalive(); 
+    }, 5000); 
+
+    setTimeout(() => {
+      keepalive(); 
+    }, 10000); 
+
+    setTimeout(() => {
+      keepalive(); 
+    }, 20000); 
+
     const options = {
       key: "rzp_test_bPES0b7gSlSjD5", 
       amount: amount * 100, 
@@ -75,6 +89,7 @@ const App = () => {
   };
 
   const handleSubmit = (e) => {
+    keepalive();
     e.preventDefault();
     if (
       name && email && 
@@ -84,7 +99,27 @@ const App = () => {
     }
   };
 
+  // Check whether Backend is up or not
+  const keepalive = () => {
+    fetch('http://localhost:3001/keepalive', {
+      method: 'GET',
+      credentials: 'include', 
+    })
+      .then((response) => {
+        if (response.ok) {
+          console.log('Server is alive');
+        } else {
+          console.log('Failed to keep the server alive');
+        }
+      })
+      .catch((error) => {
+        console.error('Error keeping server alive:', error);
+      });
+  };
+  
+
   const generateInvoice = async () => {
+    keepalive();
     const name = localStorage.getItem("name");
     const amount = localStorage.getItem("amount");
     const email = localStorage.getItem("email");
@@ -193,6 +228,7 @@ const App = () => {
   
 
   const removeinfo = () => {
+    keepalive();
     localStorage.removeItem('name');
     localStorage.removeItem('email');
     localStorage.removeItem('phone');
