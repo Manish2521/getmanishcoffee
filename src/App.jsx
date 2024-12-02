@@ -164,6 +164,7 @@ const App = () => {
       setIsLoadingInvoice(false); 
       const paymentStatus = paymentDetails.status || "Failed";
       const invoiceNumber = paymentDetails.acquirer_data?.bank_transaction_id || Math.floor(Math.random() * 900000) + 100000;; 
+      const upiId = paymentDetails.method === "upi" && paymentDetails.upi?.vpa ? paymentDetails.upi.vpa : null;
   
       doc.setFontSize(18);
       doc.setFont("helvetica", "bold");
@@ -213,9 +214,15 @@ const App = () => {
       doc.text(`Payment Method:`, 14, 124);
       doc.text(paymentMethod, 160, 124, null, null, "right");
   
-      doc.text(`Bank Name:`, 14, 132);  
-      doc.text(bankName, 160, 132, null, null, "right");
-  
+      if (!upiId) {
+          doc.text(`Bank Name:`, 14, 132);  
+          doc.text(bankName, 160, 132, null, null, "right");
+      }
+      else {
+          doc.text(`UPI ID:`, 14, 132);  
+          doc.text(upiId, 160, 132, null, null, "right"); 
+      }
+
       doc.setFont("helvetica", "bold");
       doc.text("Message", 14, 144);
       doc.line(14, 146, 196, 146);
