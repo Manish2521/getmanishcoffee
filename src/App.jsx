@@ -133,6 +133,17 @@ const App = () => {
   
     const doc = new jsPDF();
     const message = "Thank you for the great work!";
+
+    setIsLoadingInvoice(true); 
+    try {
+      // Your existing invoice generation logic
+    } catch (error) {
+      console.error("Error fetching payment details:", error);
+    } finally {
+      setIsLoadingInvoice(false); 
+    }
+  };
+    
     try {
       const response = await fetch(`https://getmanishcoffee.onrender.com/payment-details/${razorpay_payment}`, {
         method: 'GET',
