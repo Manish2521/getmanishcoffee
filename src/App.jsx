@@ -161,6 +161,7 @@ const App = () => {
       if (paymentDetails.method === "card" && paymentDetails.card) {
         bankName = paymentDetails.card.issuer || "N/A"; 
       }
+      setIsLoadingInvoice(false); 
       const paymentStatus = paymentDetails.status || "Failed";
       const invoiceNumber = paymentDetails.acquirer_data?.bank_transaction_id || Math.floor(Math.random() * 900000) + 100000;; 
   
