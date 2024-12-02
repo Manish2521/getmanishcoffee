@@ -125,25 +125,16 @@ const App = () => {
 
   const generateInvoice = async () => {
     keepalive();
-    const name = localStorage.getItem("name");
-    const amount = localStorage.getItem("amount");
-    const email = localStorage.getItem("email");
-    const phone = localStorage.getItem("phone");
-    const razorpay_payment = localStorage.getItem("razorpay_payment_id");
+    const name = localStorage.getItem("name") || "N/A";
+    const amount = localStorage.getItem("amount") || "N/A";
+    const email = localStorage.getItem("email") || "N/A";
+    const phone = localStorage.getItem("phone") || "N/A";
+    const razorpay_payment = localStorage.getItem("razorpay_payment_id") || "N/A";
   
     const doc = new jsPDF();
     const message = "Thank you for the great work!";
 
     setIsLoadingInvoice(true); 
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 2000)); 
-      console.log("Invoice generated successfully!");
-    } catch (error) {
-      console.error("Error fetching payment details:", error);
-    } finally {
-      setIsLoadingInvoice(false); // Hide loading spinner
-    }
-  };
     try {
       const response = await fetch(`https://getmanishcoffee.onrender.com/payment-details/${razorpay_payment}`, {
         method: 'GET',
