@@ -219,7 +219,7 @@ const App = () => {
           doc.text(bankName, 160, 132, null, null, "right");
       }
       else {
-          doc.text(`UPI ID:`, 14, 132);  
+          doc.text(`Upi Id:`, 14, 132);  
           doc.text(upiId, 160, 132, null, null, "right"); 
       }
 
