@@ -136,14 +136,14 @@ const App = () => {
 
     setIsLoadingInvoice(true); 
     try {
-      // Your existing invoice generation logic
+      await new Promise((resolve) => setTimeout(resolve, 2000)); 
+      console.log("Invoice generated successfully!");
     } catch (error) {
       console.error("Error fetching payment details:", error);
     } finally {
-      setIsLoadingInvoice(false); 
+      setIsLoadingInvoice(false); // Hide loading spinner
     }
   };
-    
     try {
       const response = await fetch(`https://getmanishcoffee.onrender.com/payment-details/${razorpay_payment}`, {
         method: 'GET',
