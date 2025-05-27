@@ -22,6 +22,10 @@ app.use(cors({
 }));
 app.use(cookieParser());
 
+// Default route
+app.get("/", (req, res) => {
+  res.json("Hello");
+});
 
 app.get('/payment-details/:paymentId', async (req, res) => {
   const { paymentId } = req.params;
