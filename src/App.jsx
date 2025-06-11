@@ -19,10 +19,10 @@ const App = () => {
   const incrementCount = () => setItemCount((prev) => prev + 1);
   const decrementCount = () => setItemCount((prev) => (prev > 1 ? prev - 1 : 1));
   
-  useEffect(() => {
-    keepalive();  
-    keepalive();
-  }, []);
+  // useEffect(() => {
+  //   keepalive();  
+  //   keepalive();
+  // }, []);
   
   const handlePayment = (name, email, phone, amount) => {
     localStorage.setItem('name', name);
