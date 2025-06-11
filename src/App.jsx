@@ -106,7 +106,7 @@ const App = () => {
 
   // Check whether Backend is up or not
   const keepalive = () => {
-    fetch('https://getmanishcoffee.onrender.com/keepalive', {
+    fetch('https://getmanishcoffee-s6be.onrender.com/keepalive', {
       method: 'GET',
       credentials: 'include', 
     })
@@ -136,7 +136,7 @@ const App = () => {
 
     setIsLoadingInvoice(true); 
     try {
-      const response = await fetch(`https://getmanishcoffee.onrender.com/payment-details/${razorpay_payment}`, {
+      const response = await fetch(`https://getmanishcoffee-s6be.onrender.com/payment-details/${razorpay_payment}`, {
         method: 'GET',
         credentials: 'include'  
       });
